@@ -14,9 +14,40 @@ export default function Dashboard() {
   const [userName, setUserName] = useState('');
   const [userRole, setUserRole] = useState('');
 
-  return (
-    <div className="dashboard-container">
-      <div>Dashboard Placeholder</div>
-    </div>
-  );
-}
+  useEffect(() => {
+    const name = localStorage.getItem('name') || 'User';
+    const role = localStorage.getItem('role') || 'employee';
+    setUserName(name);
+    setUserRole(role);
+
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      const eventsRes = await API.get('/events');
+      const events = eventsRes.data;
+
+      const today = new Date();
+      const upcoming = events.filter(e => new Date(e.date) > today).length;
+
+      setStats({
+        totalEvents: events.length,
+        upcomingEvents: upcoming,
+        totalRegistrations: 0,
+        completedEvents: events.filter(e => new Date(e.date) < today).length,
+      });
+
+      setEvents(events.slice(0, 5));
+    } catch (err) {
+      console.error('Error fetching dashboard data:', err);
+    }
+    setLoading(false);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
+    localStorage.removeItem('name');
+    window.location.reload();
+  };
