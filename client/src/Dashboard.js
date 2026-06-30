@@ -92,3 +92,39 @@ export default function Dashboard() {
             <div className="stat-label">Completed Events</div>
           </div>
         </div>
+
+        <div className="activity-section">
+          <h3>Recent Training Events</h3>
+          {loading ? (
+            <p>Loading...</p>
+          ) : events.length > 0 ? (
+            <table className="activity-table">
+              <thead>
+                <tr>
+                  <th>Event Title</th>
+                  <th>Category</th>
+                  <th>Date</th>
+                  <th>Location</th>
+                  <th>Capacity</th>
+                </tr>
+              </thead>
+              <tbody>
+                {events.map((event) => (
+                  <tr key={event._id}>
+                    <td>{event.title}</td>
+                    <td>{event.category}</td>
+                    <td>{new Date(event.date).toLocaleDateString()}</td>
+                    <td>{event.location}</td>
+                    <td>{event.capacity}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <p>No events found</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
