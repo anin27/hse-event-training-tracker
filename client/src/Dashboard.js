@@ -51,3 +51,25 @@ export default function Dashboard() {
     localStorage.removeItem('name');
     window.location.reload();
   };
+
+  return (
+    <div className="dashboard-container">
+      <nav className="navbar">
+        <div className="navbar-left">
+          <h1>HSE Training Tracker</h1>
+        </div>
+        <div className="navbar-right">
+          <span className="user-info">
+            {userName} ({userRole})
+          </span>
+          <button onClick={handleLogout} className="logout-btn">
+            Logout
+          </button>
+        </div>
+      </nav>
+
+      <div className="dashboard-content">
+        <h2>Dashboard</h2>
+    </div>
+   </div>
+  );
