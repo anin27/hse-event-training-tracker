@@ -70,6 +70,25 @@ export default function Dashboard() {
 
       <div className="dashboard-content">
         <h2>Dashboard</h2>
-    </div>
-   </div>
-  );
+
+        <div className="stats-grid">
+          <div className="stat-card">
+            <div className="stat-value">{stats.totalEvents}</div>
+            <div className="stat-label">Total Events</div>
+          </div>
+
+          <div className="stat-card">
+            <div className="stat-value">{stats.upcomingEvents}</div>
+            <div className="stat-label">Upcoming Events</div>
+          </div>
+
+          <div className="stat-card">
+            <div className="stat-value">{stats.totalRegistrations}</div>
+            <div className="stat-label">Total Registrations</div>
+          </div>
+
+          <div className="stat-card">
+            <div className="stat-value">{stats.completedEvents}</div>
+            <div className="stat-label">Completed Events</div>
+          </div>
+        </div>
