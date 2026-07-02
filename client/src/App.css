@@ -163,3 +163,19 @@ body {
   font-weight: 700;
   color: #1e293b;
 }
+
+.btn-create-event {
+  padding: 10px 20px;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-create-event:hover {
+  background: #2563eb;
+}
