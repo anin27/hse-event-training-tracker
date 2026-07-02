@@ -143,3 +143,23 @@ body {
 .activity-table tbody tr:hover {
   background: #f8fafc;
 }
+
+/* EVENTS STYLES */
+.events-container {
+  padding: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.events-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.events-header h2 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1e293b;
+}
