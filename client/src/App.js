@@ -36,6 +36,23 @@ function App() {
             </div>
           </nav>
 
+          <div className="nav-tabs">
+            <button
+              className={`nav-tab ${currentPage === 'dashboard' ? 'active' : ''}`}
+              onClick={() => setCurrentPage('dashboard')}
+            >
+              Dashboard
+            </button>
+            <button
+              className={`nav-tab ${currentPage === 'events' ? 'active' : ''}`}
+              onClick={() => setCurrentPage('events')}
+            >
+              Training Events
+            </button>
+          </div>
+
+          {currentPage === 'dashboard' && <Dashboard />}
+          {currentPage === 'events' && <Events />}
         </div>
       )}
     </div>
