@@ -33,3 +33,37 @@ export default function Events() {
     }
     setLoading(false);
   };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  const handleCreateEvent = async (e) => {
+    e.preventDefault();
+    if (!formData.title || !formData.date || !formData.location || !formData.capacity) {
+      setError('All fields required');
+      return;
+    }
+
+    try {
+      await API.post('/events', formData);
+      setFormData({
+        title: '',
+        description: '',
+        category: '',
+        date: '',
+        location: '',
+        capacity: '',
+      });
+      setShowCreateForm(false);
+      setError('');
+      fetchEvents();
+    } catch (err) {
+      setError('Error creating event');
+      console.error(err);
+    }
+  };
