@@ -77,6 +77,7 @@ export default function Dashboard() {
                   <th>Date</th>
                   <th>Location</th>
                   <th>Capacity</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -87,6 +88,9 @@ export default function Dashboard() {
                     <td>{new Date(event.date).toLocaleDateString()}</td>
                     <td>{event.location}</td>
                     <td>{event.capacity}</td>
+                    <td>
+                      <button className="btn-edit-small">Edit</button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
