@@ -10,15 +10,8 @@ export default function Dashboard() {
   });
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [userName, setUserName] = useState('');
-  const [userRole, setUserRole] = useState('');
 
   useEffect(() => {
-    const name = localStorage.getItem('name') || 'User';
-    const role = localStorage.getItem('role') || 'employee';
-    setUserName(name);
-    setUserRole(role);
-
     fetchDashboardData();
   }, []);
 
@@ -44,29 +37,8 @@ export default function Dashboard() {
     setLoading(false);
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('role');
-    localStorage.removeItem('name');
-    window.location.reload();
-  };
-
   return (
     <div className="dashboard-container">
-      <nav className="navbar">
-        <div className="navbar-left">
-          <h1>HSE Training Tracker</h1>
-        </div>
-        <div className="navbar-right">
-          <span className="user-info">
-            {userName} ({userRole})
-          </span>
-          <button onClick={handleLogout} className="logout-btn">
-            Logout
-          </button>
-        </div>
-      </nav>
-
       <div className="dashboard-content">
         <h2>Dashboard</h2>
 
