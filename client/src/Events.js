@@ -17,9 +17,19 @@ export default function Events() {
     capacity: '',
   });
 
-  return (
-    <div className="events-container">
-      <h2>Events Page Loading...</h2>
-    </div>
-  );
-}
+  useEffect(() => {
+    const role = localStorage.getItem('role') || 'employee';
+    setUserRole(role);
+    fetchEvents();
+  }, []);
+
+  const fetchEvents = async () => {
+    try {
+      const res = await API.get('/events');
+      setEvents(res.data);
+    } catch (err) {
+      setError('Error fetching events');
+      console.error(err);
+    }
+    setLoading(false);
+  };
