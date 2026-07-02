@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import API from './api';
+import DashboardStats from './DashboardStats';
 
 export default function Events() {
   const [events, setEvents] = useState([]);
@@ -145,156 +146,160 @@ export default function Events() {
   };
 
   return (
-    <div className="events-container">
-      <div className="events-header">
-        <h2>Training Events</h2>
-        {userRole === 'manager' && (
-          <button
-            onClick={() => setShowCreateForm(!showCreateForm)}
-            className="btn-create-event"
-          >
-            {showCreateForm ? 'Cancel' : '+ Create Event'}
-          </button>
-        )}
-      </div>
+    <div>
+      <DashboardStats />
 
-      {error && <div className="error-msg">{error}</div>}
-
-      {showCreateForm && (
-        <div className="event-form-section">
-          <h3>{editingId ? 'Edit Event' : 'Create New Event'}</h3>
-          <form onSubmit={editingId ? handleUpdateEvent : handleCreateEvent}>
-            <div className="form-group">
-              <label>Event Title</label>
-              <input
-                type="text"
-                name="title"
-                placeholder="Enter event title"
-                value={formData.title}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Description</label>
-              <textarea
-                name="description"
-                placeholder="Enter event description"
-                value={formData.description}
-                onChange={handleInputChange}
-                rows="3"
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Category</label>
-              <input
-                type="text"
-                name="category"
-                placeholder="e.g., Safety, Health, Training"
-                value={formData.category}
-                onChange={handleInputChange}
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Date</label>
-              <input
-                type="date"
-                name="date"
-                value={formData.date}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Location</label>
-              <input
-                type="text"
-                name="location"
-                placeholder="Enter event location"
-                value={formData.location}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-
-            <div className="form-group">
-              <label>Capacity</label>
-              <input
-                type="number"
-                name="capacity"
-                placeholder="Enter event capacity"
-                value={formData.capacity}
-                onChange={handleInputChange}
-                required
-              />
-            </div>
-
-            <div className="form-actions">
-              <button type="submit" className="btn-submit">
-                {editingId ? 'Update Event' : 'Create Event'}
-              </button>
-              <button type="button" onClick={handleCancel} className="btn-cancel">
-                Cancel
-              </button>
-            </div>
-          </form>
+      <div className="events-container">
+        <div className="events-header">
+          <h2>Training Events</h2>
+          {userRole === 'manager' && (
+            <button
+              onClick={() => setShowCreateForm(!showCreateForm)}
+              className="btn-create-event"
+            >
+              {showCreateForm ? 'Cancel' : '+ Create Event'}
+            </button>
+          )}
         </div>
-      )}
 
-      {loading ? (
-        <p>Loading...</p>
-      ) : events.length > 0 ? (
-        <div className="events-grid">
-          {events.map((event) => (
-            <div key={event._id} className="event-card">
-              <h3>{event.title}</h3>
-              <p><strong>Category:</strong> {event.category}</p>
-              <p><strong>Date:</strong> {new Date(event.date).toLocaleDateString()}</p>
-              <p><strong>Location:</strong> {event.location}</p>
-              <p><strong>Capacity:</strong> {event.capacity}</p>
-              {event.description && <p><strong>Description:</strong> {event.description}</p>}
+        {error && <div className="error-msg">{error}</div>}
 
-              <div className="event-actions">
-                {(userRole === 'manager' || userRole === 'employee') && (
-                  <button className="btn-register">Register</button>
-                )}
+        {showCreateForm && (
+          <div className="event-form-section">
+            <h3>{editingId ? 'Edit Event' : 'Create New Event'}</h3>
+            <form onSubmit={editingId ? handleUpdateEvent : handleCreateEvent}>
+              <div className="form-group">
+                <label>Event Title</label>
+                <input
+                  type="text"
+                  name="title"
+                  placeholder="Enter event title"
+                  value={formData.title}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
 
-                {userRole === 'admin' && (
-                  <button
-                    onClick={() => handleEditEvent(event)}
-                    className="btn-edit"
-                  >
-                    Edit
-                  </button>
-                )}
+              <div className="form-group">
+                <label>Description</label>
+                <textarea
+                  name="description"
+                  placeholder="Enter event description"
+                  value={formData.description}
+                  onChange={handleInputChange}
+                  rows="3"
+                />
+              </div>
 
-                {userRole === 'manager' && (
-                  <>
+              <div className="form-group">
+                <label>Category</label>
+                <input
+                  type="text"
+                  name="category"
+                  placeholder="e.g., Safety, Health, Training"
+                  value={formData.category}
+                  onChange={handleInputChange}
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Date</label>
+                <input
+                  type="date"
+                  name="date"
+                  value={formData.date}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Location</label>
+                <input
+                  type="text"
+                  name="location"
+                  placeholder="Enter event location"
+                  value={formData.location}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+
+              <div className="form-group">
+                <label>Capacity</label>
+                <input
+                  type="number"
+                  name="capacity"
+                  placeholder="Enter event capacity"
+                  value={formData.capacity}
+                  onChange={handleInputChange}
+                  required
+                />
+              </div>
+
+              <div className="form-actions">
+                <button type="submit" className="btn-submit">
+                  {editingId ? 'Update Event' : 'Create Event'}
+                </button>
+                <button type="button" onClick={handleCancel} className="btn-cancel">
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+
+        {loading ? (
+          <p>Loading...</p>
+        ) : events.length > 0 ? (
+          <div className="events-grid">
+            {events.map((event) => (
+              <div key={event._id} className="event-card">
+                <h3>{event.title}</h3>
+                <p><strong>Category:</strong> {event.category}</p>
+                <p><strong>Date:</strong> {new Date(event.date).toLocaleDateString()}</p>
+                <p><strong>Location:</strong> {event.location}</p>
+                <p><strong>Capacity:</strong> {event.capacity}</p>
+                {event.description && <p><strong>Description:</strong> {event.description}</p>}
+
+                <div className="event-actions">
+                  {(userRole === 'manager' || userRole === 'employee') && (
+                    <button className="btn-register">Register</button>
+                  )}
+
+                  {userRole === 'admin' && (
                     <button
                       onClick={() => handleEditEvent(event)}
                       className="btn-edit"
                     >
                       Edit
                     </button>
-                    <button
-                      onClick={() => handleDeleteEvent(event._id)}
-                      className="btn-delete"
-                    >
-                      Delete
-                    </button>
-                  </>
-                )}
+                  )}
+
+                  {userRole === 'manager' && (
+                    <>
+                      <button
+                        onClick={() => handleEditEvent(event)}
+                        className="btn-edit"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDeleteEvent(event._id)}
+                        className="btn-delete"
+                      >
+                        Delete
+                      </button>
+                    </>
+                  )}
+                </div>
               </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <p>No events found</p>
-      )}
+            ))}
+          </div>
+        ) : (
+          <p>No events found</p>
+        )}
+      </div>
     </div>
   );
 }
