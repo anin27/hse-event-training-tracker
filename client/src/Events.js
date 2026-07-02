@@ -67,3 +67,31 @@ export default function Events() {
       console.error(err);
     }
   };
+
+  const handleUpdateEvent = async (e) => {
+    e.preventDefault();
+    if (!formData.title || !formData.date || !formData.location || !formData.capacity) {
+      setError('All fields required');
+      return;
+    }
+
+    try {
+      await API.put(`/events/${editingId}`, formData);
+      setFormData({
+        title: '',
+        description: '',
+        category: '',
+        date: '',
+        location: '',
+        capacity: '',
+      });
+      setEditingId(null);
+      setError('');
+      fetchEvents();
+    } catch (err) {
+      setError('Error updating event');
+      console.error(err);
+    }
+  };
+
+  
