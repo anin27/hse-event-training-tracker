@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import Login from './Login';
 import Dashboard from './Dashboard';
@@ -7,6 +7,12 @@ import Events from './Events';
 function App() {
   const [isAuth, setAuth] = useState(!!localStorage.getItem('token'));
   const [currentPage, setCurrentPage] = useState('dashboard');
+  const [userRole, setUserRole] = useState('');
+
+  useEffect(() => {
+    const role = localStorage.getItem('role') || 'employee';
+    setUserRole(role);
+  }, []);
 
   return (
     <div className="App">
@@ -43,12 +49,14 @@ function App() {
             >
               Dashboard
             </button>
-            <button
-              className={`nav-tab ${currentPage === 'events' ? 'active' : ''}`}
-              onClick={() => setCurrentPage('events')}
-            >
-              Training Events
-            </button>
+            {(userRole === 'manager' || userRole === 'employee') && (
+              <button
+                className={`nav-tab ${currentPage === 'events' ? 'active' : ''}`}
+                onClick={() => setCurrentPage('events')}
+              >
+                Training Events
+              </button>
+            )}
           </div>
 
           {currentPage === 'dashboard' && <Dashboard />}
