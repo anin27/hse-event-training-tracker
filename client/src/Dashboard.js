@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import API from './api';
 
-export default function Dashboard() {
+export default function Dashboard({ setCurrentPage }) {
   const [stats, setStats] = useState({
     totalEvents: 0,
     upcomingEvents: 0,
@@ -35,6 +35,11 @@ export default function Dashboard() {
       console.error('Error fetching dashboard data:', err);
     }
     setLoading(false);
+  };
+
+  const handleEditEvent = (eventId) => {
+    localStorage.setItem('editEventId', eventId);
+    setCurrentPage('events');
   };
 
   return (
@@ -89,7 +94,12 @@ export default function Dashboard() {
                     <td>{event.location}</td>
                     <td>{event.capacity}</td>
                     <td>
-                      <button className="btn-edit-small">Edit</button>
+                      <button 
+                        className="btn-edit-small"
+                        onClick={() => handleEditEvent(event._id)}
+                      >
+                        Edit
+                      </button>
                     </td>
                   </tr>
                 ))}

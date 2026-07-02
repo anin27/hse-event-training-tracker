@@ -7,12 +7,12 @@ import Events from './Events';
 function App() {
   const [isAuth, setAuth] = useState(!!localStorage.getItem('token'));
   const [currentPage, setCurrentPage] = useState('dashboard');
-  const [userRole, setUserRole] = useState('');
+  const [userRole, setUserRole] = useState(localStorage.getItem('role') || 'employee');
 
   useEffect(() => {
     const role = localStorage.getItem('role') || 'employee';
     setUserRole(role);
-  }, []);
+  }, [isAuth]);
 
   return (
     <div className="App">
@@ -34,6 +34,7 @@ function App() {
                   localStorage.removeItem('name');
                   localStorage.removeItem('role');
                   setAuth(false);
+                  setUserRole('employee');
                 }}
                 className="logout-btn"
               >
@@ -49,7 +50,7 @@ function App() {
             >
               Dashboard
             </button>
-            {(userRole === 'manager' || userRole === 'employee') && (
+            {(userRole === 'admin' || userRole === 'manager' || userRole === 'employee') && (
               <button
                 className={`nav-tab ${currentPage === 'events' ? 'active' : ''}`}
                 onClick={() => setCurrentPage('events')}
@@ -59,7 +60,7 @@ function App() {
             )}
           </div>
 
-          {currentPage === 'dashboard' && <Dashboard />}
+          {currentPage === 'dashboard' && <Dashboard setCurrentPage={setCurrentPage} />}
           {currentPage === 'events' && <Events />}
         </div>
       )}

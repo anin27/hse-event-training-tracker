@@ -23,6 +23,17 @@ export default function Events() {
     fetchEvents();
   }, []);
 
+  useEffect(() => {
+    const editEventId = localStorage.getItem('editEventId');
+    if (editEventId && events.length > 0) {
+      const eventToEdit = events.find(e => e._id === editEventId);
+      if (eventToEdit) {
+        handleEditEvent(eventToEdit);
+        localStorage.removeItem('editEventId');
+      }
+    }
+  }, [events]);
+
   const fetchEvents = async () => {
     try {
       const res = await API.get('/events');
