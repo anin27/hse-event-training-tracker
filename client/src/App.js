@@ -14,8 +14,32 @@ function App() {
         <Login setAuth={setAuth} />
       ) : (
         <div>
-          {/* Navbar coming next */}
+          <nav className="navbar">
+            <div className="navbar-left">
+              <h1>HSE Training Tracker</h1>
+            </div>
+            <div className="navbar-right">
+              <span className="user-info">
+                {localStorage.getItem('name')} ({localStorage.getItem('role')})
+              </span>
+              <button
+                onClick={() => {
+                  localStorage.removeItem('token');
+                  localStorage.removeItem('name');
+                  localStorage.removeItem('role');
+                  setAuth(false);
+                }}
+                className="logout-btn"
+              >
+                Logout
+              </button>
+            </div>
+          </nav>
+
         </div>
       )}
     </div>
   );
+}
+
+export default App;
