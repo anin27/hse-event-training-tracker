@@ -3,6 +3,7 @@ import './App.css';
 import Login from './Login';
 import Dashboard from './Dashboard';
 import Events from './Events';
+import Registrations from './Registrations';
 
 function App() {
   const [isAuth, setAuth] = useState(!!localStorage.getItem('token'));
@@ -58,10 +59,19 @@ function App() {
                 Training Events
               </button>
             )}
+            {(userRole === 'admin' || userRole === 'manager') && (
+              <button
+                className={`nav-tab ${currentPage === 'registrations' ? 'active' : ''}`}
+                onClick={() => setCurrentPage('registrations')}
+              >
+                Registrations
+              </button>
+            )}
           </div>
 
           {currentPage === 'dashboard' && <Dashboard setCurrentPage={setCurrentPage} />}
           {currentPage === 'events' && <Events />}
+          {currentPage === 'registrations' && <Registrations />}
         </div>
       )}
     </div>
