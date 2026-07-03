@@ -38,3 +38,15 @@ export default function Registrations() {
       }
     }
   };
+
+  const handleStatusChange = async (enrollmentId, newStatus) => {
+    try {
+      await API.patch(`/enrolments/${enrollmentId}`, { status: newStatus });
+      fetchRegistrations();
+    } catch (err) {
+      setError('Error updating status');
+      console.error(err);
+    }
+  };
+
+  
