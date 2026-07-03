@@ -26,3 +26,15 @@ export default function Registrations() {
     }
     setLoading(false);
   };
+
+  const handleRemoveRegistration = async (enrollmentId) => {
+    if (window.confirm('Remove this registration?')) {
+      try {
+        await API.delete(`/enrolments/${enrollmentId}`);
+        fetchRegistrations();
+      } catch (err) {
+        setError('Error removing registration');
+        console.error(err);
+      }
+    }
+  };
