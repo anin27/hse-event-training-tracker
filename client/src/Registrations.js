@@ -49,4 +49,45 @@ export default function Registrations() {
     }
   };
 
-  
+  const filteredRegistrations = registrations.filter(reg => {
+    const matchesSearch = reg.employee?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = filterStatus === 'all' || reg.status === filterStatus;
+    return matchesSearch && matchesStatus;
+  });
+
+  return (
+    <div>
+      <DashboardStats />
+
+      <div className="registrations-container">
+        <div className="registrations-header">
+          <h2>Employee Registrations</h2>
+          {(userRole === 'manager' || userRole === 'admin') && (
+            <button className="btn-create-event">+ Register Employee</button>
+          )}
+        </div>
+
+        {error && <div className="error-msg">{error}</div>}
+
+        <div className="registrations-filter">
+          <input
+            type="text"
+            placeholder="Search employee name..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="search-input"
+          />
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            className="filter-select"
+          >
+            <option value="all">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="attended">Attended</option>
+            <option value="completed">Completed</option>
+            <option value="no_show">No Show</option>
+          </select>
+        </div>
+
+        
