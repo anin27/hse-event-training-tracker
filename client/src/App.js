@@ -13,6 +13,7 @@ function App() {
   useEffect(() => {
     const role = localStorage.getItem('role') || 'employee';
     setUserRole(role);
+    setCurrentPage('dashboard');
   }, [isAuth]);
 
   return (
@@ -45,31 +46,57 @@ function App() {
           </nav>
 
           <div className="nav-tabs">
-            <button
-              className={`nav-tab ${currentPage === 'dashboard' ? 'active' : ''}`}
-              onClick={() => setCurrentPage('dashboard')}
-            >
-              Dashboard
-            </button>
-            {(userRole === 'admin' || userRole === 'manager' || userRole === 'employee') && (
+            {userRole === 'admin' && (
               <button
-                className={`nav-tab ${currentPage === 'events' ? 'active' : ''}`}
-                onClick={() => setCurrentPage('events')}
+                className={`nav-tab ${currentPage === 'dashboard' ? 'active' : ''}`}
+                onClick={() => setCurrentPage('dashboard')}
               >
-                Training Events
+                Dashboard
               </button>
             )}
-            {(userRole === 'admin' || userRole === 'manager') && (
-              <button
-                className={`nav-tab ${currentPage === 'registrations' ? 'active' : ''}`}
-                onClick={() => setCurrentPage('registrations')}
-              >
-                Registrations
-              </button>
+
+            {userRole === 'manager' && (
+              <>
+                <button
+                  className={`nav-tab ${currentPage === 'dashboard' ? 'active' : ''}`}
+                  onClick={() => setCurrentPage('dashboard')}
+                >
+                  Dashboard
+                </button>
+                <button
+                  className={`nav-tab ${currentPage === 'events' ? 'active' : ''}`}
+                  onClick={() => setCurrentPage('events')}
+                >
+                  Training Events
+                </button>
+                <button
+                  className={`nav-tab ${currentPage === 'registrations' ? 'active' : ''}`}
+                  onClick={() => setCurrentPage('registrations')}
+                >
+                  Registrations
+                </button>
+              </>
+            )}
+
+            {userRole === 'employee' && (
+              <>
+                <button
+                  className={`nav-tab ${currentPage === 'dashboard' ? 'active' : ''}`}
+                  onClick={() => setCurrentPage('dashboard')}
+                >
+                  Dashboard
+                </button>
+                <button
+                  className={`nav-tab ${currentPage === 'registrations' ? 'active' : ''}`}
+                  onClick={() => setCurrentPage('registrations')}
+                >
+                  Registrations
+                </button>
+              </>
             )}
           </div>
 
-          {currentPage === 'dashboard' && <Dashboard setCurrentPage={setCurrentPage} />}
+          {currentPage === 'dashboard' && <Dashboard setCurrentPage={setCurrentPage} userRole={userRole} />}
           {currentPage === 'events' && <Events />}
           {currentPage === 'registrations' && <Registrations />}
         </div>
