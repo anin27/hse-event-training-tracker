@@ -90,4 +90,63 @@ export default function Registrations() {
           </select>
         </div>
 
-        
+        {loading ? (
+          <p>Loading...</p>
+        ) : filteredRegistrations.length > 0 ? (
+          <table className="registrations-table">
+            <thead>
+              <tr>
+                <th>Employee Name</th>
+                <th>Employee ID</th>
+                <th>Event</th>
+                <th>Date Registered</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredRegistrations.map((reg) => (
+                <tr key={reg._id}>
+                  <td>{reg.employee}</td>
+                  <td>{reg.employeeId}</td>
+                  <td>{reg.event}</td>
+                  <td>{new Date(reg.createdAt).toLocaleDateString()}</td>
+                  <td>
+                    {(userRole === 'manager' || userRole === 'admin') ? (
+                      <select
+                        value={reg.status}
+                        onChange={(e) => handleStatusChange(reg._id, e.target.value)}
+                        className={`status-select status-${reg.status}`}
+                      >
+                        <option value="pending">Pending</option>
+                        <option value="attended">Attended</option>
+                        <option value="completed">Completed</option>
+                        <option value="no_show">No Show</option>
+                      </select>
+                    ) : (
+                      <span className={`status-badge status-${reg.status}`}>
+                        {reg.status}
+                      </span>
+                    )}
+                  </td>
+                  <td>
+                    {(userRole === 'manager' || userRole === 'admin') && (
+                      <button
+                        onClick={() => handleRemoveRegistration(reg._id)}
+                        className="btn-remove"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p>No registrations found</p>
+        )}
+      </div>
+    </div>
+  );
+}
