@@ -46,7 +46,7 @@ export default function Dashboard({ setCurrentPage, userRole }) {
                     <th>Date</th>
                     <th>Location</th>
                     <th>Capacity</th>
-                    {(userRole === 'admin' || userRole === 'manager') && <th>Action</th>}
+                    {userRole === 'admin' && <th>Action</th>}
                   </tr>
                 </thead>
                 <tbody>
@@ -57,7 +57,7 @@ export default function Dashboard({ setCurrentPage, userRole }) {
                       <td>{new Date(event.date).toLocaleDateString()}</td>
                       <td>{event.location}</td>
                       <td>{event.capacity}</td>
-                      {(userRole === 'admin' || userRole === 'manager') && (
+                      {userRole === 'admin' && (
                         <td>
                           <button 
                             className="btn-edit-small"
