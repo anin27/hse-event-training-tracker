@@ -6,7 +6,6 @@ export default function DashboardStats() {
     totalEvents: 0,
     upcomingEvents: 0,
     totalRegistrations: 0,
-    completedEvents: 0,
   });
 
   useEffect(() => {
@@ -20,13 +19,11 @@ export default function DashboardStats() {
 
       const today = new Date();
       const upcoming = events.filter(e => new Date(e.date) > today).length;
-      const completed = events.filter(e => new Date(e.date) < today).length;
 
       setStats({
         totalEvents: events.length,
         upcomingEvents: upcoming,
         totalRegistrations: 0,
-        completedEvents: completed,
       });
     } catch (err) {
       console.error('Error fetching stats:', err);
@@ -48,11 +45,6 @@ export default function DashboardStats() {
       <div className="stat-card">
         <div className="stat-label">Total Registrations</div>
         <div className="stat-value">{stats.totalRegistrations}</div>
-      </div>
-
-      <div className="stat-card">
-        <div className="stat-label">Completed Events</div>
-        <div className="stat-value">{stats.completedEvents}</div>
       </div>
     </div>
   );
