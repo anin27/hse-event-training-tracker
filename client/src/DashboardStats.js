@@ -8,7 +8,6 @@ export default function DashboardStats() {
     totalRegistrations: 0,
     completedEvents: 0,
   });
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchStats();
@@ -32,7 +31,6 @@ export default function DashboardStats() {
     } catch (err) {
       console.error('Error fetching stats:', err);
     }
-    setLoading(false);
   };
 
   return (
