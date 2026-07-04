@@ -10,6 +10,11 @@ export default function DashboardStats() {
 
   useEffect(() => {
     fetchStats();
+    
+    // Refresh stats every 5 seconds
+    const interval = setInterval(fetchStats, 5000);
+    
+    return () => clearInterval(interval);
   }, []);
 
   const fetchStats = async () => {
@@ -17,13 +22,16 @@ export default function DashboardStats() {
       const eventsRes = await API.get('/events');
       const events = eventsRes.data;
 
+      const enrollmentsRes = await API.get('/enrolments');
+      const enrollments = enrollmentsRes.data;
+
       const today = new Date();
       const upcoming = events.filter(e => new Date(e.date) > today).length;
 
       setStats({
         totalEvents: events.length,
         upcomingEvents: upcoming,
-        totalRegistrations: 0,
+        totalRegistrations: enrollments.length,
       });
     } catch (err) {
       console.error('Error fetching stats:', err);
