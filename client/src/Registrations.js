@@ -280,7 +280,7 @@ export default function Registrations() {
                 <tr key={reg._id}>
                   <td>{reg.employee}</td>
                   <td>{reg.employeeId}</td>
-                  <td>{reg.event}</td>
+                  <td>{typeof reg.event === 'object' ? reg.event.title : reg.event}</td>
                   <td>{new Date(reg.createdAt).toLocaleDateString()}</td>
                   <td>
                     {(userRole === 'manager' || userRole === 'admin') ? (
