@@ -3,210 +3,174 @@ import API from './api';
 import './Login.css';
 
 export default function Login({ setAuth }) {
-  const [isRegister, setIsRegister] = useState(false);
-  
-  // Login fields
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [role, setRole] = useState('employee');
-  
-  // Register fields
-  const [name, setName] = useState('');
-  const [regEmail, setRegEmail] = useState('');
-  const [regPassword, setRegPassword] = useState('');
-  const [regRole, setRegRole] = useState('employee');
-  
+  const [isRegistering, setIsRegistering] = useState(false);
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+    name: '',
+    role: 'employee',
+  });
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    if (!email || !password) {
-      setError('Email and password required');
-      return;
-    }
-
-    setLoading(true);
-    setError('');
-
     try {
-      const res = await API.post('/auth/login', { email, password });
+      const res = await API.post('/auth/login', {
+        email: formData.email,
+        password: formData.password,
+      });
+
       localStorage.setItem('token', res.data.token);
-      localStorage.setItem('role', res.data.role);
       localStorage.setItem('name', res.data.name);
+      localStorage.setItem('role', res.data.role);
       setAuth(true);
+      setError('');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
     }
-    setLoading(false);
   };
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    if (!name || !regEmail || !regPassword) {
+    if (!formData.name || !formData.email || !formData.password) {
       setError('All fields required');
       return;
     }
-
-    setLoading(true);
-    setError('');
-
     try {
-      await API.post('/auth/register', { 
-        name, 
-        email: regEmail, 
-        password: regPassword, 
-        role: regRole 
+      const res = await API.post('/auth/register', {
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+        role: formData.role,
       });
+
+      localStorage.setItem('token', res.data.token);
+      localStorage.setItem('name', res.data.name);
+      localStorage.setItem('role', res.data.role);
+      setAuth(true);
       setError('');
-      setName('');
-      setRegEmail('');
-      setRegPassword('');
-      alert('Account created! Now sign in with your email and password.');
-      setIsRegister(false);
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed');
     }
-    setLoading(false);
   };
 
   return (
     <div className="login-container">
       <div className="login-card">
-        {!isRegister ? (
-          <>
-            <div className="login-logo">
-              <h1>HSE Training Tracker</h1>
-              <p>Sign in to your account</p>
+        <h1>HSE Training Tracker</h1>
+        <p className="login-subtitle">Sign in to your account</p>
+
+        {error && <div className="error-msg">{error}</div>}
+
+        {!isRegistering ? (
+          <form onSubmit={handleLogin}>
+            <div className="form-group">
+              <label>Email</label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="Enter your email"
+                required
+              />
             </div>
 
-            {error && <div className="error-msg">{error}</div>}
-
-            <form onSubmit={handleLogin}>
-              <div className="form-group">
-                <label>Email</label>
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Password</label>
-                <input
-                  type="password"
-                  placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-              </div>
-
-              <button type="submit" disabled={loading} className="sign-in-btn">
-                {loading ? 'Signing in...' : 'Sign in'}
-              </button>
-            </form>
-
-            <div className="role-grid">
-              <button
-                type="button"
-                className={`role-btn ${role === 'admin' ? 'active' : ''}`}
-                onClick={() => setRole('admin')}
-              >
-                <span>Admin</span>
-              </button>
-              <button
-                type="button"
-                className={`role-btn ${role === 'manager' ? 'active' : ''}`}
-                onClick={() => setRole('manager')}
-              >
-                <span>Manager</span>
-              </button>
-              <button
-                type="button"
-                className={`role-btn ${role === 'employee' ? 'active' : ''}`}
-                onClick={() => setRole('employee')}
-              >
-                <span>Employee</span>
-              </button>
+            <div className="form-group">
+              <label>Password</label>
+              <input
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Enter your password"
+                required
+              />
             </div>
+
+            <button type="submit" className="btn-signin">Sign in</button>
 
             <button
               type="button"
-              className="register-btn"
-              onClick={() => setIsRegister(true)}
+              onClick={() => {
+                setIsRegistering(true);
+                setError('');
+                setFormData({ email: '', password: '', name: '', role: 'employee' });
+              }}
+              className="btn-toggle"
             >
               Register & Login
             </button>
-          </>
+          </form>
         ) : (
-          <>
-            <div className="login-logo">
-              <h1>HSE Training Tracker</h1>
-              <p>Create your account</p>
+          <form onSubmit={handleRegister}>
+            <div className="form-group">
+              <label>Full Name</label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                placeholder="Enter your name"
+                required
+              />
             </div>
 
-            {error && <div className="error-msg">{error}</div>}
+            <div className="form-group">
+              <label>Email</label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="Enter your email"
+                required
+              />
+            </div>
 
-            <form onSubmit={handleRegister}>
-              <div className="form-group">
-                <label>Full Name</label>
-                <input
-                  type="text"
-                  placeholder="Enter your full name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                />
-              </div>
+            <div className="form-group">
+              <label>Password</label>
+              <input
+                type="password"
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                placeholder="Enter your password"
+                required
+              />
+            </div>
 
-              <div className="form-group">
-                <label>Email</label>
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  value={regEmail}
-                  onChange={(e) => setRegEmail(e.target.value)}
-                  required
-                />
-              </div>
+            <div className="form-group">
+              <label>Role</label>
+              <select
+                name="role"
+                value={formData.role}
+                onChange={handleChange}
+              >
+                <option value="employee">Employee</option>
+                <option value="manager">Manager</option>
+                <option value="admin">Admin</option>
+              </select>
+            </div>
 
-              <div className="form-group">
-                <label>Password</label>
-                <input
-                  type="password"
-                  placeholder="Enter your password"
-                  value={regPassword}
-                  onChange={(e) => setRegPassword(e.target.value)}
-                  required
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Role</label>
-                <select value={regRole} onChange={(e) => setRegRole(e.target.value)}>
-                  <option value="employee">Employee</option>
-                  <option value="manager">Manager</option>
-                  <option value="admin">Admin</option>
-                </select>
-              </div>
-
-              <button type="submit" disabled={loading} className="sign-in-btn">
-                {loading ? 'Creating account...' : 'Register'}
-              </button>
-            </form>
+            <button type="submit" className="btn-signin">Register</button>
 
             <button
               type="button"
-              className="register-btn"
-              onClick={() => setIsRegister(false)}
+              onClick={() => {
+                setIsRegistering(false);
+                setError('');
+                setFormData({ email: '', password: '', name: '', role: 'employee' });
+              }}
+              className="btn-toggle"
             >
-              Back to Sign In
+              Back to Sign in
             </button>
-          </>
+          </form>
         )}
       </div>
     </div>
