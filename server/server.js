@@ -14,22 +14,28 @@ app.use(helmet());
 
 // Rate limiting: general API limiter
 const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 200, // limit each IP to 200 requests per window
+  windowMs: 15 * 60 * 1000,
+  max: 200,
   message: { message: 'Too many requests, please try again later.' }
 });
 app.use('/api/', apiLimiter);
 
-// Stricter limiter for auth routes (login/register) to prevent brute force
+// Stricter limiter for auth routes
 const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 20, // limit each IP to 20 auth attempts per window
+  windowMs: 15 * 60 * 1000,
+  max: 20,
   message: { message: 'Too many login attempts, please try again later.' }
 });
 app.use('/api/auth', authLimiter);
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: [
+    'http://localhost:3000',
+    'https://hse-event-training-tracker-1.onrender.com'
+  ],
+  credentials: true
+}));
 app.use(express.json());
 
 // Routes
