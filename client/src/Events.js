@@ -19,18 +19,18 @@ export default function Events() {
   });
 
   useEffect(() => {
-    const role = localStorage.getItem('role') || 'employee';
+    const role = sessionStorage.getItem('role') || 'employee';
     setUserRole(role);
     fetchEvents();
   }, []);
 
   useEffect(() => {
-    const editEventId = localStorage.getItem('editEventId');
+    const editEventId = sessionStorage.getItem('editEventId');
     if (editEventId && events.length > 0) {
       const eventToEdit = events.find(e => e._id === editEventId);
       if (eventToEdit) {
         handleEditEvent(eventToEdit);
-        localStorage.removeItem('editEventId');
+        sessionStorage.removeItem('editEventId');
       }
     }
   }, [events]);
@@ -55,9 +55,10 @@ export default function Events() {
       await API.post('/events', formData);
       setFormData({ title: '', description: '', category: '', date: '', location: '', capacity: '' });
       setShowCreateForm(false);
+      setError('');
       fetchEvents();
     } catch (err) {
-      setError('Error creating event');
+      setError(err.response?.data?.message || 'Error creating event');
     }
   };
 
@@ -67,9 +68,11 @@ export default function Events() {
       await API.put(`/events/${editingId}`, formData);
       setFormData({ title: '', description: '', category: '', date: '', location: '', capacity: '' });
       setEditingId(null);
+      setShowCreateForm(false);
+      setError('');
       fetchEvents();
     } catch (err) {
-      setError('Error updating event');
+      setError(err.response?.data?.message || 'Error updating event');
     }
   };
 
@@ -98,17 +101,21 @@ export default function Events() {
   };
 
   const handleRegisterForEvent = async (eventId) => {
+    const userEmail = prompt('Please enter your email for confirmation:');
+    if (!userEmail) return;
+
     try {
-      const userName = localStorage.getItem('name') || 'Employee';
+      const userName = sessionStorage.getItem('name') || 'Employee';
       await API.post('/enrolments', {
         employee: userName,
         employeeId: userName,
+        email: userEmail,
         event: eventId,
         status: 'pending',
       });
-      alert('Registered successfully!');
+      alert('Registered successfully! Check your email for confirmation.');
     } catch (err) {
-      alert('Error registering');
+      alert(err.response?.data?.message || 'Error registering');
     }
   };
 
@@ -133,7 +140,7 @@ export default function Events() {
 
         {error && <div className="error-msg">{error}</div>}
 
-        {showCreateForm && (
+        {showCreateForm && (userRole === 'manager' || (userRole === 'admin' && editingId)) && (
           <div className="event-form-section">
             <h3>{editingId ? 'Edit Event' : 'Create Event'}</h3>
             <form onSubmit={editingId ? handleUpdateEvent : handleCreateEvent}>

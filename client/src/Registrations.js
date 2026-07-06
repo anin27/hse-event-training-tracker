@@ -9,24 +9,31 @@ export default function Registrations() {
   const [filterStatus, setFilterStatus] = useState('all');
   const [error, setError] = useState('');
   const [userRole, setUserRole] = useState('');
-  const [showRegisterForm, setShowRegisterForm] = useState(false);
 
+  const [showRegisterForm, setShowRegisterForm] = useState(false);
   const [allEvents, setAllEvents] = useState([]);
   const [formData, setFormData] = useState({
     employeeName: '',
     employeeId: '',
+    email: '',
     eventId: '',
     department: '',
     status: 'pending',
   });
 
   useEffect(() => {
-    const role = localStorage.getItem('role') || 'employee';
+    const role = sessionStorage.getItem('role') || 'employee';
     setUserRole(role);
+
     fetchRegistrations();
-    if (role === 'manager' || role === 'admin') {
-      fetchEventsAndEmployees();
-    }
+    fetchEventsAndEmployees();
+
+    // Auto-refresh registrations every 5 seconds so new entries from other sessions show up
+    const interval = setInterval(() => {
+      fetchRegistrations();
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const fetchRegistrations = async () => {
@@ -37,9 +44,7 @@ export default function Registrations() {
     } catch (err) {
       console.error('Error fetching registrations:', err);
       setRegistrations([]);
-      if (userRole !== 'employee') {
-        setError('Error fetching registrations');
-      }
+      setError('');
     }
     setLoading(false);
   };
@@ -63,15 +68,19 @@ export default function Registrations() {
 
   const handleRegisterEmployee = async (e) => {
     e.preventDefault();
-    if (!formData.employeeId || !formData.eventId) {
-      setError('Please fill all required fields');
+    if (!formData.eventId) {
+      setError('Please select an event');
       return;
     }
 
+    const empName = formData.employeeName || sessionStorage.getItem('name') || 'Employee';
+    const empId = formData.employeeId || sessionStorage.getItem('name') || 'Employee';
+
     try {
       await API.post('/enrolments', {
-        employee: formData.employeeName,
-        employeeId: formData.employeeId,
+        employee: empName,
+        employeeId: empId,
+        email: formData.email,
         event: formData.eventId,
         department: formData.department,
         status: formData.status,
@@ -81,8 +90,9 @@ export default function Registrations() {
       setShowRegisterForm(false);
       setError('');
       fetchRegistrations();
+      alert('Successfully registered! Check your email for confirmation.');
     } catch (err) {
-      setError('Error registering employee');
+      setError(err.response?.data?.message || 'Error registering');
       console.error(err);
     }
   };
@@ -91,6 +101,7 @@ export default function Registrations() {
     setFormData({
       employeeName: '',
       employeeId: '',
+      email: '',
       eventId: '',
       department: '',
       status: 'pending',
@@ -121,8 +132,15 @@ export default function Registrations() {
   };
 
   const filteredRegistrations = registrations.filter(reg => {
-    const matchesSearch = reg.employee?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = filterStatus === 'all' || reg.status === filterStatus;
+    
+    if (userRole === 'employee') {
+      // Employee sees ALL registrations (just filter by status)
+      return matchesStatus;
+    }
+    
+    // Manager sees all registrations (can search by employee name)
+    const matchesSearch = searchTerm === '' || reg.employee?.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesSearch && matchesStatus;
   });
 
@@ -133,111 +151,117 @@ export default function Registrations() {
       <div className="registrations-container">
         <div className="registrations-header">
           <h2>Employee Registrations</h2>
+          <button 
+            onClick={() => setShowRegisterForm(!showRegisterForm)}
+            className="btn-create-event"
+          >
+            + Register
+          </button>
         </div>
 
         {error && <div className="error-msg">{error}</div>}
 
-        {(userRole === 'manager' || userRole === 'admin') && (
-          <>
-            <button
-              onClick={() => setShowRegisterForm(!showRegisterForm)}
-              className="btn-register-form"
-            >
-              + Register Employee
-            </button>
+        {showRegisterForm && (
+          <div className="register-form-section">
+            <h3>{userRole === 'employee' ? 'Register for Event' : 'Register Employee'}</h3>
+            <form onSubmit={handleRegisterEmployee}>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Employee Name</label>
+                  <input
+                    type="text"
+                    name="employeeName"
+                    placeholder="Enter name"
+                    value={formData.employeeName}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
 
-            {showRegisterForm && (
-              <div className="register-form-section">
-                <h3>Register Employee</h3>
-                <form onSubmit={handleRegisterEmployee}>
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label>Employee Name</label>
-                      <input
-                        type="text"
-                        name="employeeName"
-                        placeholder="Enter name"
-                        value={formData.employeeName}
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-
-                    <div className="form-group">
-                      <label>Employee ID</label>
-                      <input
-                        type="text"
-                        name="employeeId"
-                        placeholder="e.g., EMP-001"
-                        value={formData.employeeId}
-                        onChange={handleInputChange}
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label>Training Event</label>
-                      <select
-                        name="eventId"
-                        value={formData.eventId}
-                        onChange={handleInputChange}
-                        required
-                      >
-                        <option value="">-- Select Event --</option>
-                        {allEvents.map(event => (
-                          <option key={event._id} value={event._id}>
-                            {event.title}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
-                    <div className="form-group">
-                      <label>Department</label>
-                      <input
-                        type="text"
-                        name="department"
-                        placeholder="e.g., Engineering"
-                        value={formData.department}
-                        onChange={handleInputChange}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="form-row">
-                    <div className="form-group">
-                      <label>Attendance Status</label>
-                      <select
-                        name="status"
-                        value={formData.status}
-                        onChange={handleInputChange}
-                      >
-                        <option value="pending">Pending</option>
-                        <option value="attended">Attended</option>
-                        <option value="completed">Completed</option>
-                        <option value="no_show">No Show</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="form-actions">
-                    <button type="submit" className="btn-submit">
-                      Register Employee
-                    </button>
-                    <button 
-                      type="button" 
-                      onClick={handleClearForm}
-                      className="btn-clear"
-                    >
-                      Clear
-                    </button>
-                  </div>
-                </form>
+                <div className="form-group">
+                  <label>Employee ID</label>
+                  <input
+                    type="text"
+                    name="employeeId"
+                    placeholder="e.g., EMP-001"
+                    value={formData.employeeId}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
               </div>
-            )}
-          </>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Email</label>
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="Enter your email address"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Training Event</label>
+                  <select
+                    name="eventId"
+                    value={formData.eventId}
+                    onChange={handleInputChange}
+                    required
+                  >
+                    <option value="">-- Select Event --</option>
+                    {allEvents.map(event => (
+                      <option key={event._id} value={event._id}>
+                        {event.title}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Department</label>
+                  <input
+                    type="text"
+                    name="department"
+                    placeholder="e.g., Engineering"
+                    value={formData.department}
+                    onChange={handleInputChange}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label>Attendance Status</label>
+                  <select
+                    name="status"
+                    value={formData.status}
+                    onChange={handleInputChange}
+                  >
+                    <option value="pending">Pending</option>
+                    <option value="completed">Completed</option>
+                    <option value="no_show">No Show</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="form-actions">
+                <button type="submit" className="btn-submit">
+                  {userRole === 'employee' ? 'Register' : 'Register Employee'}
+                </button>
+                <button 
+                  type="button" 
+                  onClick={handleClearForm}
+                  className="btn-clear"
+                >
+                  Clear
+                </button>
+              </div>
+            </form>
+          </div>
         )}
 
         <div className="registrations-filter">
@@ -255,7 +279,6 @@ export default function Registrations() {
           >
             <option value="all">All Status</option>
             <option value="pending">Pending</option>
-            <option value="attended">Attended</option>
             <option value="completed">Completed</option>
             <option value="no_show">No Show</option>
           </select>
@@ -270,9 +293,9 @@ export default function Registrations() {
                 <th>Employee Name</th>
                 <th>Employee ID</th>
                 <th>Event</th>
-                <th>Date Registered</th>
+                <th>Event Date</th>
                 <th>Status</th>
-                <th>Actions</th>
+                {(userRole === 'manager' || userRole === 'admin') && <th>Actions</th>}
               </tr>
             </thead>
             <tbody>
@@ -280,8 +303,12 @@ export default function Registrations() {
                 <tr key={reg._id}>
                   <td>{reg.employee}</td>
                   <td>{reg.employeeId}</td>
-                  <td>{typeof reg.event === 'object' ? reg.event.title : reg.event}</td>
-                  <td>{new Date(reg.createdAt).toLocaleDateString()}</td>
+                  <td>{reg.event?.title || (typeof reg.event === 'string' ? reg.event : 'Event deleted')}</td>
+                  <td>
+                    {reg.event?.date
+                      ? new Date(reg.event.date).toLocaleDateString()
+                      : '—'}
+                  </td>
                   <td>
                     {(userRole === 'manager' || userRole === 'admin') ? (
                       <select
@@ -290,7 +317,6 @@ export default function Registrations() {
                         className={`status-select status-${reg.status}`}
                       >
                         <option value="pending">Pending</option>
-                        <option value="attended">Attended</option>
                         <option value="completed">Completed</option>
                         <option value="no_show">No Show</option>
                       </select>
@@ -300,16 +326,16 @@ export default function Registrations() {
                       </span>
                     )}
                   </td>
-                  <td>
-                    {(userRole === 'manager' || userRole === 'admin') && (
+                  {(userRole === 'manager' || userRole === 'admin') && (
+                    <td>
                       <button
                         onClick={() => handleRemoveRegistration(reg._id)}
                         className="btn-remove"
                       >
                         Remove
                       </button>
-                    )}
-                  </td>
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>

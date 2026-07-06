@@ -4,13 +4,15 @@ const Enrolment = require('../models/Enrolment');
 const Event = require('../models/Event');
 const auth = require('../middleware/auth');
 const role = require('../middleware/role');
+const { sendRegistrationConfirmation } = require('../utils/mailer');
 
 // POST enrol employee in event (anyone can register)
 router.post('/', auth, async (req, res) => {
   try {
-    const { employee, employeeId, event, department } = req.body;
+    console.log('=== ROUTE HIT - ENROLMENTS POST ===');
+    const { employee, employeeId, email, event, department, status } = req.body;
     
-    if (!employee || !employeeId || !event || !department) {
+    if (!employee || !employeeId || !email || !event) {
       return res.status(400).json({ message: 'All fields required' });
     }
 
@@ -30,9 +32,28 @@ router.post('/', auth, async (req, res) => {
     const enrolment = await Enrolment.create({ 
       employee, 
       employeeId, 
+      email,
       event, 
-      department 
+      department,
+      status: status || 'pending'
     });
+
+    console.log('=== ATTEMPTING TO SEND EMAIL TO ===', email);
+    try {
+      await sendRegistrationConfirmation({
+        toEmail: email,
+        employeeName: employee,
+        eventTitle: eventExists.title,
+        eventDate: eventExists.date,
+        location: eventExists.location
+      });
+      console.log('=== EMAIL SENT SUCCESSFULLY ===');
+    } catch (mailErr) {
+      console.error('=== FAILED TO SEND EMAIL ===', mailErr.message);
+      if (mailErr.response) {
+        console.error('=== SENDGRID ERROR BODY ===', JSON.stringify(mailErr.response.body));
+      }
+    }
 
     res.status(201).json(enrolment);
   } catch (err) {
@@ -51,8 +72,8 @@ router.get('/event/:eventId', auth, role('admin', 'manager'), async (req, res) =
   }
 });
 
-// GET all enrolments (admin/manager only)
-router.get('/', auth, role('admin', 'manager'), async (req, res) => {
+// GET all enrolments (any logged-in user - Employee, Manager, Admin)
+router.get('/', auth, async (req, res) => {
   try {
     const enrolments = await Enrolment.find()
       .populate('event', 'title date');

@@ -6,12 +6,12 @@ import Events from './Events';
 import Registrations from './Registrations';
 
 function App() {
-  const [isAuth, setAuth] = useState(!!localStorage.getItem('token'));
+  const [isAuth, setAuth] = useState(!!sessionStorage.getItem('token'));
   const [currentPage, setCurrentPage] = useState('dashboard');
-  const [userRole, setUserRole] = useState(localStorage.getItem('role') || 'employee');
+  const [userRole, setUserRole] = useState(sessionStorage.getItem('role') || 'employee');
 
   useEffect(() => {
-    const role = localStorage.getItem('role') || 'employee';
+    const role = sessionStorage.getItem('role') || 'employee';
     setUserRole(role);
     setCurrentPage('dashboard');
   }, [isAuth]);
@@ -28,13 +28,13 @@ function App() {
             </div>
             <div className="navbar-right">
               <span className="user-info">
-                {localStorage.getItem('name')} ({localStorage.getItem('role')})
+                {sessionStorage.getItem('name')} ({sessionStorage.getItem('role')})
               </span>
               <button
                 onClick={() => {
-                  localStorage.removeItem('token');
-                  localStorage.removeItem('name');
-                  localStorage.removeItem('role');
+                  sessionStorage.removeItem('token');
+                  sessionStorage.removeItem('name');
+                  sessionStorage.removeItem('role');
                   setAuth(false);
                   setUserRole('employee');
                 }}

@@ -21,7 +21,7 @@ export default function Dashboard({ setCurrentPage, userRole }) {
   };
 
   const handleEditEvent = (eventId) => {
-    localStorage.setItem('editEventId', eventId);
+    sessionStorage.setItem('editEventId', eventId);
     setCurrentPage('events');
   };
 
@@ -50,25 +50,30 @@ export default function Dashboard({ setCurrentPage, userRole }) {
                   </tr>
                 </thead>
                 <tbody>
-                  {events.map((event) => (
-                    <tr key={event._id}>
-                      <td>{event.title}</td>
-                      <td>{event.category}</td>
-                      <td>{new Date(event.date).toLocaleDateString()}</td>
-                      <td>{event.location}</td>
-                      <td>{event.capacity}</td>
-                      {userRole === 'admin' && (
-                        <td>
-                          <button 
-                            className="btn-edit-small"
-                            onClick={() => handleEditEvent(event._id)}
-                          >
-                            Edit
-                          </button>
+                  {events.map((event) => {
+                    const isFull = event.registeredCount >= event.capacity;
+                    return (
+                      <tr key={event._id}>
+                        <td>{event.title}</td>
+                        <td>{event.category}</td>
+                        <td>{new Date(event.date).toLocaleDateString()}</td>
+                        <td>{event.location}</td>
+                        <td className={isFull ? 'capacity-full' : ''}>
+                          {event.registeredCount ?? 0} / {event.capacity}
                         </td>
-                      )}
-                    </tr>
-                  ))}
+                        {userRole === 'admin' && (
+                          <td>
+                            <button 
+                              className="btn-edit-small"
+                              onClick={() => handleEditEvent(event._id)}
+                            >
+                              Edit
+                            </button>
+                          </td>
+                        )}
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             ) : (

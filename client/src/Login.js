@@ -24,9 +24,9 @@ export default function Login({ setAuth }) {
         password: formData.password,
       });
 
-      localStorage.setItem('token', res.data.token);
-      localStorage.setItem('name', res.data.name);
-      localStorage.setItem('role', res.data.role);
+      sessionStorage.setItem('token', res.data.token);
+      sessionStorage.setItem('name', res.data.name);
+      sessionStorage.setItem('role', res.data.role);
       setAuth(true);
       setError('');
     } catch (err) {
@@ -48,9 +48,9 @@ export default function Login({ setAuth }) {
         role: formData.role,
       });
 
-      localStorage.setItem('token', res.data.token);
-      localStorage.setItem('name', res.data.name);
-      localStorage.setItem('role', res.data.role);
+      sessionStorage.setItem('token', res.data.token);
+      sessionStorage.setItem('name', res.data.name);
+      sessionStorage.setItem('role', res.data.role);
       setAuth(true);
       setError('');
     } catch (err) {
@@ -103,7 +103,7 @@ export default function Login({ setAuth }) {
               }}
               className="btn-toggle"
             >
-              Register & Login
+              Don't have an account? Sign up
             </button>
           </form>
         ) : (

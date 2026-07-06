@@ -9,6 +9,11 @@ const enrolmentSchema = new mongoose.Schema({
     type: String, 
     required: true 
   },
+  email: {
+    type: String,
+    required: true,
+    trim: true
+  },
   event: { 
     type: mongoose.Schema.Types.ObjectId, 
     ref: 'Event', 
@@ -20,7 +25,7 @@ const enrolmentSchema = new mongoose.Schema({
   },
   status: { 
     type: String, 
-    enum: ['pending', 'attended', 'completed', 'no_show'], 
+    enum: ['pending', 'completed', 'no_show'], 
     default: 'pending' 
   }
 }, { timestamps: true });
