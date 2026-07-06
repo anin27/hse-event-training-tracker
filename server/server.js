@@ -1,11 +1,32 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const dotenv = require('dotenv')
+const dotenv = require('dotenv');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 
-dotenv.config({path: './.env'});
+dotenv.config({ path: './.env' });
 
 const app = express();
+
+// Security middleware
+app.use(helmet());
+
+// Rate limiting: general API limiter
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 200, // limit each IP to 200 requests per window
+  message: { message: 'Too many requests, please try again later.' }
+});
+app.use('/api/', apiLimiter);
+
+// Stricter limiter for auth routes (login/register) to prevent brute force
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20, // limit each IP to 20 auth attempts per window
+  message: { message: 'Too many login attempts, please try again later.' }
+});
+app.use('/api/auth', authLimiter);
 
 // Middleware
 app.use(cors());
