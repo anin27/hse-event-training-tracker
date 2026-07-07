@@ -1,6 +1,7 @@
 # HSE Training Tracker
 
 HSE Training Event Management System
+
 HSE Training Tracker is a full-stack MERN application that helps organisations manage Health, Safety & Environment (HSE) training programmes, including training event scheduling, employee registrations, attendance tracking, and automated email notifications, through a single web-based platform. The system is designed around a real industrial/offshore training context (fire safety, BOSIET, offshore survival), and access is controlled through secure role-based authentication and authorisation.
 
 Live Demo: https://hse-event-training-tracker-1.onrender.com
