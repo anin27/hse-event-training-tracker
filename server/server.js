@@ -19,12 +19,14 @@ app.use(cors({
 
 app.use(helmet());
 
-const skipOptions = (req) => req.method === 'OPTIONS';
+// Only rate-limit state-changing requests and preflight — routine polling (GET)
+// should never be throttled, since it carries no brute-force or abuse risk.
+const skipReadsAndOptions = (req) => req.method === 'OPTIONS' || req.method === 'GET';
 
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 200,
-  skip: skipOptions,
+  max: 2000,
+  skip: skipReadsAndOptions,
   message: { message: 'Too many requests, please try again later.' }
 });
 app.use('/api/', apiLimiter);
@@ -32,7 +34,7 @@ app.use('/api/', apiLimiter);
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 20,
-  skip: skipOptions,
+  skip: (req) => req.method === 'OPTIONS',
   skipSuccessfulRequests: true,
   message: { message: 'Too many login attempts, please try again later.' }
 });
